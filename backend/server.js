@@ -5,6 +5,8 @@ const connectDB = require("./config/db");
 
 // Load env variables
 dotenv.config();
+
+// Connect to MongoDB
 connectDB();
 
 const app = express();
@@ -14,6 +16,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use("/api/users", require("./routes/userRoutes"));
+
 app.get("/", (req, res) => {
     res.send("SkillSwap Backend is running");
 });
