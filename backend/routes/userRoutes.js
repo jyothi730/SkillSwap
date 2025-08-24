@@ -7,6 +7,7 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  getMatches,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -20,7 +21,9 @@ router.get("/:id", getUserById);
 
 // Private
 router.get("/me/profile", protect, getMe);
+router.post("/me/matches", protect, getMatches);
 router.put("/:id", protect, updateUser);
 router.delete("/:id", protect, deleteUser);
+
 
 module.exports = router;

@@ -22,7 +22,7 @@ const getRequests = async (req, res) => {
   try {
     const requests = await Request.find({
       $or: [{ sender: req.user._id }, { receiver: req.user._id }]
-    }).populate("sender receiver", "name email skillsOffered skillsWanted");
+    }).populate("sender receiver", "name email skillsOffered skillsWanted").sort({ createdAt: -1 });
 
     res.json(requests);
   } catch (err) {

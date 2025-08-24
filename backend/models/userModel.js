@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, select: false }, // hide by default
     skillsOffered: { type: [String], default: [] },
     skillsWanted: { type: [String], default: [] },
+    timezone: { type: String },  
     credits: { type: Number, default: 0 },
   },
   { timestamps: true }

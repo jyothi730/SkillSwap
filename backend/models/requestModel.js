@@ -5,8 +5,8 @@ const requestSchema = new mongoose.Schema({
   receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   skillOffered: { type: String, required: true },
   skillWanted: { type: String, required: true },
-  status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" },
   scheduledDate: { type: Date },
+  status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Request", requestSchema);

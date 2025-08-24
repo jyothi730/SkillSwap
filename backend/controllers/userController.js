@@ -9,7 +9,7 @@ const genToken = (id) =>
 // @access Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, skillsOffered, skillsWanted } = req.body;
+    const { name, email, password, skillsOffered = [], skillsWanted = [], timezone} = req.body;
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "User already exists" });
@@ -20,6 +20,7 @@ const registerUser = async (req, res) => {
       password, // hashed in pre('save')
       skillsOffered,
       skillsWanted,
+      timezone
     });
 
     res.status(201).json({
@@ -28,6 +29,7 @@ const registerUser = async (req, res) => {
       email: user.email,
       skillsOffered: user.skillsOffered,
       skillsWanted: user.skillsWanted,
+      timezone: user.timezone,
       credits: user.credits,
       token: genToken(user._id),
     });
@@ -55,6 +57,7 @@ const loginUser = async (req, res) => {
       email: user.email,
       skillsOffered: user.skillsOffered,
       skillsWanted: user.skillsWanted,
+      timezone: user.timezone,
       credits: user.credits,
       token: genToken(user._id),
     });
@@ -110,11 +113,7 @@ const updateUser = async (req, res) => {
       const user = await User.findById(req.params.id).select("+password");
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      user.name = updates.name ?? user.name;
-      user.email = updates.email ?? user.email;
-      user.skillsOffered = updates.skillsOffered ?? user.skillsOffered;
-      user.skillsWanted = updates.skillsWanted ?? user.skillsWanted;
-      user.password = updates.password ?? user.password;
+      Object.assign(user, updates);
 
       const saved = await user.save();
       const clean = saved.toObject();
@@ -153,12 +152,37 @@ const deleteUser = async (req, res) => {
 
 const getMatches = async (req, res) => {
   try {
-    const matches = await User.find({
-      skillsOffered: { $in: req.user.skillsWanted },
-      _id: { $ne: req.user._id }
-    }).select("-password");
+    const me = await User.findById(req.user.id);
+    if (!me) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.json(matches);
+    // Find all other users
+    const users = await User.find({
+      _id: { $ne: req.user.id },
+    });
+
+    // Score matches based on skill overlap
+    const scored = users.map((u) => {
+      const offeredMatch = u.skills.filter((s) => me.skills.includes(s));
+      const wantedMatch = me.skills.filter((s) => u.skills.includes(s));
+
+      const score = offeredMatch.length + wantedMatch.length;
+
+      return { 
+        ...u.toObject(), 
+        score, 
+        offeredMatch, 
+        wantedMatch 
+      };
+    });
+
+    // Sort by best score
+    scored.sort((a, b) => b.score - a.score);
+
+    res.json(scored);
+
+    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -173,4 +197,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getMatches,
 };
