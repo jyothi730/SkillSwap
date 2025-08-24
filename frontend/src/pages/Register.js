@@ -17,7 +17,7 @@ class Register extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post("http://localhost:5000/api/users/register", {
         name: this.state.name,
         email: this.state.email,
         password: this.state.password,
@@ -25,7 +25,7 @@ class Register extends Component {
       });
       window.location.href = "/login";
     } catch (err) {
-      this.setState({ error: "Registration failed" });
+      this.setState({ error: err.response?.data?.message || "Registration failed" });
     }
   };
 

@@ -3,20 +3,14 @@ import axios from "axios";
 
 class SkillMatch extends Component {
   state = {
-    skill: "",
-    matches: []
+    matches: [],
   };
 
-  handleChange = (e) => {
-    this.setState({ skill: e.target.value });
-  };
-
-  handleSearch = async () => {
+  handleFindMatches = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/match",
-        { skill: this.state.skill },
+        "http://localhost:5000/api/users/me/matches",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       this.setState({ matches: res.data });
@@ -29,17 +23,13 @@ class SkillMatch extends Component {
     return (
       <div>
         <h2>Skill Match</h2>
-        <input
-          type="text"
-          placeholder="Enter skill"
-          value={this.state.skill}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleSearch}>Search</button>
+        <button onClick={this.handleFindMatches}>Find Matches</button>
 
         <ul>
           {this.state.matches.map((user, idx) => (
-            <li key={idx}>{user.name} - {user.skills.join(", ")}</li>
+            <li key={idx}>
+              {user.name} – {user.skills.join(", ")}
+            </li>
           ))}
         </ul>
       </div>
