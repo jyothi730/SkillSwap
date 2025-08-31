@@ -152,36 +152,50 @@ const deleteUser = async (req, res) => {
 
 const getMatches = async (req, res) => {
   try {
-    const me = await User.findById(req.user.id);
-    if (!me) {
+    // Get logged in user
+    const currentUser = await User.findById(req.user.id);
+    if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Find all other users
-    const users = await User.find({
-      _id: { $ne: req.user.id },
-    });
+    // Ensure currentUser has skills
+    if ((!Array.isArray(currentUser.skillsOffered) || currentUser.skillsOffered.length === 0) && (!Array.isArray(currentUser.skillsWanted) || currentUser.skillsWanted.length === 0)) {
+      return res.json({ message: "You have no skills to match", matches: [] });
+    }
 
-    // Score matches based on skill overlap
-    const scored = users.map((u) => {
-      const offeredMatch = u.skills.filter((s) => me.skills.includes(s));
-      const wantedMatch = me.skills.filter((s) => u.skills.includes(s));
+    // Find other users
+    const users = await User.find({ _id: { $ne: currentUser._id } });
 
-      const score = offeredMatch.length + wantedMatch.length;
+    // Find matches safely
+    const matches = users
+      .map((u) => {
+        // currentUser offers something u wants
+        const offeredMatch = Array.isArray(currentUser.skillsOffered)
+          ? currentUser.skillsOffered.filter((s) =>
+              (u.skillsWanted || []).map((x) => x.toLowerCase()).includes(s.toLowerCase())
+            )
+          : [];
 
-      return { 
-        ...u.toObject(), 
-        score, 
-        offeredMatch, 
-        wantedMatch 
-      };
-    });
+    // currentUser wants something u offers
+    const wantedMatch = Array.isArray(currentUser.skillsWanted)
+      ? currentUser.skillsWanted.filter((s) =>
+        (u.skillsOffered || []).map((x) => x.toLowerCase()).includes(s.toLowerCase())
+      )
+      : [];
 
-    // Sort by best score
-    scored.sort((a, b) => b.score - a.score);
+    const score = offeredMatch.length + wantedMatch.length;
 
-    res.json(scored);
-
+    return {
+      id: u._id,
+      username: u.name,
+      offeredMatch,
+      wantedMatch,
+      score,
+    };
+  })
+  .filter((m) => m.score > 0);
+  
+  res.json(matches);
     
   } catch (err) {
     res.status(500).json({ message: err.message });

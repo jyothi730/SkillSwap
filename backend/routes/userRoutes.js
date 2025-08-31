@@ -21,7 +21,7 @@ router.get("/:id", getUserById);
 
 // Private
 router.get("/me/profile", protect, getMe);
-router.post("/me/matches", protect, getMatches);
+router.get("/me/matches", protect, getMatches);
 router.put("/:id", protect, updateUser);
 router.delete("/:id", protect, deleteUser);
 
