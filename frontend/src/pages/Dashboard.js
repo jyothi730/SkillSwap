@@ -3,9 +3,9 @@ import React, { Component } from "react";
 class Dashboard extends Component {
   render() {
     return (
-      <div>
+      <div className="center-container">
         <h2>Welcome to Dashboard</h2>
-        <p>You are logged in!</p>
+        <p className="subtext">You are logged in!</p>
       </div>
     );
   }

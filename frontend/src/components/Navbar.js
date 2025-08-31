@@ -6,7 +6,7 @@ class Navbar extends Component {
     const isLoggedIn = localStorage.getItem("token");
 
     return (
-      <nav style={{ padding: "10px", background: "#eee" }}>
+      <nav>
         <Link to="/dashboard" style={{ marginRight: "10px" }}>
           Dashboard
         </Link>

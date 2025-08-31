@@ -31,40 +31,42 @@ class Register extends Component {
 
   render() {
     return (
-      <div>
-        <h2>Register</h2>
-        {this.state.error && <p style={{ color: "red" }}>{this.state.error}</p>}
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={this.state.name}
-            onChange={this.handleChange}
-          /><br/>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={this.state.email}
-            onChange={this.handleChange}
-          /><br/>
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
-          /><br/>
-          <input
-            type="text"
-            name="skills"
-            placeholder="Skills (comma separated)"
-            value={this.state.skills}
-            onChange={this.handleChange}
-          /><br/>
-          <button type="submit">Register</button>
-        </form>
+      <div className="page-container">
+        <div className="register-card">
+          <h2>Register</h2>
+          {this.state.error && <p style={{ color: "red" }}>{this.state.error}</p>}
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={this.state.name}
+              onChange={this.handleChange}
+            /><br/>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={this.state.email}
+              onChange={this.handleChange}
+            /><br/>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handleChange}
+            /><br/>
+            <input
+              type="text"
+              name="skills"
+              placeholder="Skills (comma separated)"
+              value={this.state.skills}
+              onChange={this.handleChange}
+            /><br/>
+            <button type="submit">Register</button>
+          </form>
+        </div>
       </div>
     );
   }
