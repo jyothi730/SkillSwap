@@ -9,7 +9,7 @@ const genToken = (id) =>
 // @access Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, skillsOffered = [], skillsWanted = [], timezone} = req.body;
+    const { name, email, password, skillsOffered = [], skillsRequired = [], location} = req.body;
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "User already exists" });
@@ -19,8 +19,8 @@ const registerUser = async (req, res) => {
       email,
       password, // hashed in pre('save')
       skillsOffered,
-      skillsWanted,
-      timezone
+      skillsRequired,
+      location
     });
 
     res.status(201).json({
@@ -28,8 +28,8 @@ const registerUser = async (req, res) => {
       name: user.name,
       email: user.email,
       skillsOffered: user.skillsOffered,
-      skillsWanted: user.skillsWanted,
-      timezone: user.timezone,
+      skillsRequired: user.skillsRequired,
+      location: user.location,
       credits: user.credits,
       token: genToken(user._id),
     });
@@ -56,8 +56,8 @@ const loginUser = async (req, res) => {
       name: user.name,
       email: user.email,
       skillsOffered: user.skillsOffered,
-      skillsWanted: user.skillsWanted,
-      timezone: user.timezone,
+      skillsRequired: user.skillsRequired,
+      location: user.location,
       credits: user.credits,
       token: genToken(user._id),
     });
@@ -159,7 +159,7 @@ const getMatches = async (req, res) => {
     }
 
     // Ensure currentUser has skills
-    if ((!Array.isArray(currentUser.skillsOffered) || currentUser.skillsOffered.length === 0) && (!Array.isArray(currentUser.skillsWanted) || currentUser.skillsWanted.length === 0)) {
+    if ((!Array.isArray(currentUser.skillsOffered) || currentUser.skillsOffered.length === 0) && (!Array.isArray(currentUser.skillsRequired) || currentUser.skillsRequired.length === 0)) {
       return res.json({ message: "You have no skills to match", matches: [] });
     }
 
@@ -169,33 +169,35 @@ const getMatches = async (req, res) => {
     // Find matches safely
     const matches = users
       .map((u) => {
-        // currentUser offers something u wants
-        const offeredMatch = Array.isArray(currentUser.skillsOffered)
-          ? currentUser.skillsOffered.filter((s) =>
-              (u.skillsWanted || []).map((x) => x.toLowerCase()).includes(s.toLowerCase())
-            )
-          : [];
+        // Case-insensitive matching
+        const offeredMatch = (u.skillsOffered || []).filter((s) =>
+          (currentUser.skillsRequired || [])
+            .map((x) => x.toLowerCase())
+            .includes(s.toLowerCase())
+        );
 
-    // currentUser wants something u offers
-    const wantedMatch = Array.isArray(currentUser.skillsWanted)
-      ? currentUser.skillsWanted.filter((s) =>
-        (u.skillsOffered || []).map((x) => x.toLowerCase()).includes(s.toLowerCase())
-      )
-      : [];
+        const requiredMatch = (u.skillsRequired || []).filter((s) =>
+          (currentUser.skillsOffered || [])
+            .map((x) => x.toLowerCase())
+            .includes(s.toLowerCase())
+        );
 
-    const score = offeredMatch.length + wantedMatch.length;
+        if (offeredMatch.length > 0 || requiredMatch.length > 0) {
+          return {
+            _id: u._id,
+            name: u.name,
+            email: u.email,
+            location: u.location,
+            offeredMatch,
+            requiredMatch,
+            score: offeredMatch.length + requiredMatch.length,
+          };
+        }
+        return null;
+      })
+      .filter((m) => m !== null);
 
-    return {
-      id: u._id,
-      username: u.name,
-      offeredMatch,
-      wantedMatch,
-      score,
-    };
-  })
-  .filter((m) => m.score > 0);
-  
-  res.json(matches);
+    res.json(matches);
     
   } catch (err) {
     res.status(500).json({ message: err.message });

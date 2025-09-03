@@ -20,7 +20,7 @@ router.get("/", getUsers);
 router.get("/:id", getUserById);
 
 // Private
-router.get("/me/profile", protect, getMe);
+router.get("/me", protect, getMe);
 router.get("/me/matches", protect, getMatches);
 router.put("/:id", protect, updateUser);
 router.delete("/:id", protect, deleteUser);

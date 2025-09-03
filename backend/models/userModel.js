@@ -7,9 +7,9 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false }, // hide by default
     skillsOffered: { type: [String], default: [] },
-    skillsWanted: { type: [String], default: [] },
-    timezone: { type: String },  
+    skillsRequired: { type: [String], default: [] }, 
     credits: { type: Number, default: 0 },
+    location: { type: String }, // Added location
   },
   { timestamps: true }
 );

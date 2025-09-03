@@ -2,13 +2,13 @@ const Request = require("../models/requestModel");
 
 const createRequest = async (req, res) => {
   try {
-    const { receiver, skillOffered, skillWanted, scheduledDate } = req.body;
+    const { receiver, skillOffered, skillRequired, scheduledDate } = req.body;
 
     const request = await Request.create({
       sender: req.user._id,
       receiver,
       skillOffered,
-      skillWanted,
+      skillRequired,
       scheduledDate
     });
 
@@ -22,7 +22,7 @@ const getRequests = async (req, res) => {
   try {
     const requests = await Request.find({
       $or: [{ sender: req.user._id }, { receiver: req.user._id }]
-    }).populate("sender receiver", "name email skillsOffered skillsWanted").sort({ createdAt: -1 });
+    }).populate("sender receiver", "name email skillsOffered skillsRequired").sort({ createdAt: -1 });
 
     res.json(requests);
   } catch (err) {
