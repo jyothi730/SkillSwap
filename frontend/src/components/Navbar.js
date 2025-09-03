@@ -10,6 +10,7 @@ class Navbar extends Component {
         <Link to="/dashboard" style={{ marginRight: "10px" }}>
           Dashboard
         </Link>
+        <Link to="/profile" style={{ marginRight: "10px" }}>My Profile</Link>
         <Link to="/match" style={{ marginRight: "10px" }}>
           Skill Match
         </Link>

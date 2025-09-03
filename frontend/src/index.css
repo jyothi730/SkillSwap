@@ -13,6 +13,7 @@ body {
 }
 
 /* Navbar */
+/* Navbar */
 nav {
   background: linear-gradient(90deg, #4f46e5, #3b82f6);
   padding: 0.75rem 1.5rem;
@@ -21,9 +22,16 @@ nav {
   justify-content: space-between;
 }
 
+/* Left links container */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Links */
 nav a {
   color: #f9fafb;
-  margin-right: 1rem;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
@@ -33,6 +41,7 @@ nav a:hover {
   color: #dbeafe;
 }
 
+/* Logout button */
 nav button {
   background: #ef4444;
   color: #fff;
@@ -41,11 +50,13 @@ nav button {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
+  transition: background 0.2s ease;
 }
 
 nav button:hover {
   background: #dc2626;
 }
+
 
 /* Centered container */
 .center-container {
@@ -201,57 +212,3 @@ button:hover {
   background: #4338ca;
 }
 
-/* Skill Match Page Layout */
-.skill-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-}
-
-/* Button */
-.skill-container button {
-  background: #4f46e5;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 2rem;
-  transition: background 0.2s ease;
-}
-
-.skill-container button:hover {
-  background: #4338ca;
-}
-
-/* Results Layout */
-.matches {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  max-width: 600px;
-}
-
-.skills-box {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  width: 220px;
-  background: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.skills-box h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.skills-box p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
-}

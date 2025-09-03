@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import SkillMatch from "./pages/SkillMatch";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 
@@ -26,6 +27,15 @@ function App() {
           element={
             <ProtectedRoute>
               <SkillMatch />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/profile" element={<Profile />} />    
+        <Route
+          path="/profile/:id"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

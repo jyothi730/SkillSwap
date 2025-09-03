@@ -6,7 +6,9 @@ class Register extends Component {
     name: "",
     email: "",
     password: "",
-    skills: "",
+    skillsRequired: "",
+    skillsOffered: "",
+    location: "",
     error: ""
   };
 
@@ -21,7 +23,9 @@ class Register extends Component {
         name: this.state.name,
         email: this.state.email,
         password: this.state.password,
-        skills: this.state.skills.split(","),
+        skillsRequired: this.state.skillsRequired.split(",").map(s => s.trim()),
+        skillsOffered: this.state.skillsOffered.split(",").map(s => s.trim()),
+        location: this.state.location,
       });
       window.location.href = "/login";
     } catch (err) {
@@ -59,10 +63,23 @@ class Register extends Component {
             /><br/>
             <input
               type="text"
-              name="skills"
-              placeholder="Skills (comma separated)"
-              value={this.state.skills}
+              name="skillsRequired"
+              placeholder="Skills Required (comma separated)"
+              value={this.state.skillsRequired}
               onChange={this.handleChange}
+            /><br/>
+            <input
+              type="text"
+              name="skillsOffered"
+              placeholder="Skills Offered (comma separated)"
+              value={this.state.skillsOffered}
+              onChange={this.handleChange}
+            /><br/>
+            <input
+              type="text"
+              placeholder="Enter your location"
+              value={this.state.location}
+              onChange={(e) => this.setState({ location: e.target.value })}
             /><br/>
             <button type="submit">Register</button>
           </form>
