@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import './SignUp.css'
 
-class Register extends Component {
+class SignUp extends Component {
   state = {
     name: "",
     email: "",
@@ -27,23 +29,22 @@ class Register extends Component {
         skillsOffered: this.state.skillsOffered.split(",").map(s => s.trim()),
         location: this.state.location,
       });
-      window.location.href = "/login";
+      window.location.href = "/dashboard";
     } catch (err) {
-      this.setState({ error: err.response?.data?.message || "Registration failed" });
+      this.setState({ error: err.response?.data?.message || "Signup failed" });
     }
   };
 
   render() {
     return (
-      <div className="page-container">
-        <div className="register-card">
-          <h2>Register</h2>
+      <div className="auth-container">
+        <div className="auth-card">
           {this.state.error && <p style={{ color: "red" }}>{this.state.error}</p>}
           <form onSubmit={this.handleSubmit}>
             <input
               type="text"
               name="name"
-              placeholder="Name"
+              placeholder="Full Name"
               value={this.state.name}
               onChange={this.handleChange}
             /><br/>
@@ -81,12 +82,17 @@ class Register extends Component {
               value={this.state.location}
               onChange={(e) => this.setState({ location: e.target.value })}
             /><br/>
-            <button type="submit">Register</button>
+            <button type="submit" className="btn">
+              Sign Up
+            </button>
           </form>
+          <p className="switch"> 
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
         </div>
       </div>
     );
   }
 }
 
-export default Register;
+export default SignUp

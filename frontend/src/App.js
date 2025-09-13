@@ -1,19 +1,22 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import SkillMatch from "./pages/SkillMatch";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import LandingPage from "./pages/LandingPage";
+import ProfileWrapper from "./pages/ProfileWrapper";
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<SignUp />} />
         <Route
           path="/dashboard"
           element={
@@ -35,7 +38,7 @@ function App() {
           path="/profile/:id"
           element={
             <ProtectedRoute>
-              <Profile />
+              <ProfileWrapper />
             </ProtectedRoute>
           }
         />
