@@ -17,11 +17,13 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/", getUsers);
-router.get("/:id", getUserById);
 
 // Private
 router.get("/me", protect, getMe);
 router.get("/me/matches", protect, getMatches);
+
+// Dynamic by-id routes
+router.get("/:id", getUserById);
 router.put("/:id", protect, updateUser);
 router.delete("/:id", protect, deleteUser);
 

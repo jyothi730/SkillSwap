@@ -1,4 +1,5 @@
 const Request = require("../models/requestModel");
+const User = require("../models/userModel");
 
 const createRequest = async (req, res) => {
   try {
@@ -39,8 +40,16 @@ const updateRequestStatus = async (req, res) => {
       return res.status(403).json({ message: "Not allowed" });
     }
 
-    request.status = req.body.status || request.status;
+    const newStatus = req.body.status || request.status;
+    request.status = newStatus;
     await request.save();
+
+    if (newStatus === "accepted") {
+      await Promise.all([
+        User.findByIdAndUpdate(request.receiver, { $inc: { taughtCount: 1, credits: 1 } }),
+        User.findByIdAndUpdate(request.sender, { $inc: { learnedCount: 1 } }),
+      ]);
+    }
 
     res.json(request);
   } catch (err) {

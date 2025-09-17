@@ -21,6 +21,13 @@ app.use(morgan("dev"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/requests", require("./routes/requestRoutes"));
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong", error: err.message });
+});
+
+
 app.get("/", (req, res) => {
     res.send("SkillSwap Backend is running");
 });
