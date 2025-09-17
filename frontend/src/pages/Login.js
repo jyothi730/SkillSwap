@@ -20,6 +20,8 @@ class Login extends Component {
         password: this.state.password,
       });
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("name", res.data.name);
+      localStorage.setItem("userId", res.data._id);
       window.location.href = "/dashboard";
     } catch (err) {
       this.setState({ error: "Invalid credentials" });

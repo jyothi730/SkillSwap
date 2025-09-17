@@ -7,7 +7,6 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
-import ProfileWrapper from "./pages/ProfileWrapper";
 
 function App() {
   return (
@@ -38,7 +37,7 @@ function App() {
           path="/profile/:id"
           element={
             <ProtectedRoute>
-              <ProfileWrapper />
+              <Profile />
             </ProtectedRoute>
           }
         />
