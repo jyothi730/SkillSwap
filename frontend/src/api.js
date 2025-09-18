@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: process.env.NODE_ENV === "production" 
+    ? "https://skillswap-1-f4vs.onrender.com/api" 
+    : "http://localhost:5000/api",
 });
 
 // attach token if present
