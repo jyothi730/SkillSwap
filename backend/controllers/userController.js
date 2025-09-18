@@ -17,7 +17,7 @@ const registerUser = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password,
+      password, // hashed in pre('save')
       skillsOffered,
       skillsRequired,
       location
@@ -31,8 +31,6 @@ const registerUser = async (req, res) => {
       skillsRequired: user.skillsRequired,
       location: user.location,
       credits: user.credits,
-      taughtCount: user.taughtCount,
-      learnedCount: user.learnedCount,
       token: genToken(user._id),
     });
   } catch (error) {
@@ -61,8 +59,6 @@ const loginUser = async (req, res) => {
       skillsRequired: user.skillsRequired,
       location: user.location,
       credits: user.credits,
-      taughtCount: user.taughtCount,
-      learnedCount: user.learnedCount,
       token: genToken(user._id),
     });
   } catch (error) {
@@ -111,6 +107,7 @@ const updateUser = async (req, res) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
+    // If password is included, allow hash on save by using document.save()
     const updates = { ...req.body };
     if ("password" in updates) {
       const user = await User.findById(req.params.id).select("+password");
@@ -169,7 +166,7 @@ const getMatches = async (req, res) => {
     // Find other users
     const users = await User.find({ _id: { $ne: currentUser._id } });
 
-    const totalRequired = Array.isArray(currentUser.skillsRequired) ? currentUser.skillsRequired.length : 0;
+    // Find matches safely
     const matches = users
       .map((u) => {
         // Case-insensitive matching
@@ -186,7 +183,6 @@ const getMatches = async (req, res) => {
         );
 
         if (offeredMatch.length > 0 || requiredMatch.length > 0) {
-          const score = totalRequired > 0 ? Math.round((offeredMatch.length / totalRequired) * 100) : 0;
           return {
             _id: u._id,
             name: u.name,
@@ -194,7 +190,7 @@ const getMatches = async (req, res) => {
             location: u.location,
             offeredMatch,
             requiredMatch,
-            score,
+            score: offeredMatch.length + requiredMatch.length,
           };
         }
         return null;
@@ -207,6 +203,7 @@ const getMatches = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 module.exports = {
   registerUser,

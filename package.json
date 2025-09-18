@@ -1,0 +1,11 @@
+{
+  "name": "skillswap",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-client": "cd frontend && npm install",
+    "install-server": "cd backend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start"
+  }
+}

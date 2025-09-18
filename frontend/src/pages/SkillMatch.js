@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import API from "../api";
-import { FaMapMarkerAlt, FaStar } from "react-icons/fa";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import "./skillMatch.css";
 
@@ -33,51 +32,14 @@ class SkillMatch extends Component {
   handleFindMatches = async () => {
     try {
       this.setState({ loading: true, error: null });
-      const res = await API.get("/users/me/matches");
-      const sorted = [...res.data].sort((a, b) => (b.score || 0) - (a.score || 0));
-      this.setState({ matches: sorted, loading: false });
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:5000/api/users/me/matches", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      this.setState({ matches: res.data, loading: false });
     } catch (err) {
       console.error("Error fetching matches:", err);
       this.setState({ error: "Failed to fetch matches", loading: false });
-    }
-  };
-
-  handleSendRequest = async (user) => {
-    try {
-      const teachable = (user.requiredMatch || []); // what you can teach them
-      const learnable = (user.offeredMatch || []); // what they can teach you
-
-      if (learnable.length === 0) {
-        alert("No compatible skills to request.");
-        return;
-      }
-
-      const skillRequired = window.prompt(
-        `Pick what you want to learn from ${user.name}:`,
-        learnable[0] || ""
-      );
-      if (!skillRequired) return;
-
-      let skillOffered = teachable[0] || "";
-      if (teachable.length > 0) {
-        const chosen = window.prompt(
-          `Pick what you can teach ${user.name} (optional):`,
-          skillOffered
-        );
-        skillOffered = chosen || skillOffered;
-      }
-
-      const payload = {
-        receiver: user._id,
-        skillOffered: skillOffered || "General Guidance",
-        skillRequired,
-      };
-
-      await API.post("/requests", payload);
-      alert("Request sent!");
-    } catch (err) {
-      console.error("Failed to send request", err);
-      alert(err.response?.data?.message || "Failed to send request");
     }
   };
 
@@ -87,11 +49,11 @@ class SkillMatch extends Component {
 
     // Filtering logic
     let filteredMatches = matches.filter((user) => {
-      const q = searchText.toLowerCase();
       const matchesSearch =
-        user.name?.toLowerCase().includes(q) ||
-        (user.offeredMatch || []).some((s) => s.toLowerCase().includes(q)) ||
-        (user.requiredMatch || []).some((s) => s.toLowerCase().includes(q));
+        user.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.skills?.some((s) =>
+          s.toLowerCase().includes(searchText.toLowerCase())
+        );
 
       const matchesLocation =
         locationFilter === "all" ||
@@ -99,10 +61,7 @@ class SkillMatch extends Component {
 
       const matchesSkill =
         skillFilter === "all" ||
-        (user.offeredMatch || []).some((s) =>
-          s.toLowerCase().includes(skillFilter.toLowerCase())
-        ) ||
-        (user.requiredMatch || []).some((s) =>
+        user.skills?.some((s) =>
           s.toLowerCase().includes(skillFilter.toLowerCase())
         );
 
@@ -165,15 +124,11 @@ class SkillMatch extends Component {
                     <div className="avatar">{user.name?.[0] || "U"}</div>
                     <div>
                       <h4>{user.name}</h4>
-                      <p className="location">
-                        <FaMapMarkerAlt style={{ marginRight: 4 }} />
-                        {user.location || "Unknown"}
-                      </p>
+                      <p className="location">{user.location || "Unknown"}</p>
                     </div>
                   </div>
                   <span className="score">
-                    <FaStar style={{ marginRight: 4 }} />
-                    {user.score || 0}% <small>match</small>
+                    ⭐ {user.score || 0}% <small>match</small>
                   </span>
                 </div>
 
@@ -200,10 +155,9 @@ class SkillMatch extends Component {
                   )}
                 </div>
 
-                <div className="actions">
-                  <Link to={`/profile/${user._id}`} className="btn">View Profile</Link>
-                  <button className="btn secondary" onClick={() => this.handleSendRequest(user)}>Send Request</button>
-                </div>
+                <Link to={`/profile/${user._id}`} className="profile-btn">
+                  View Profile
+                </Link>
               </div>
             ))
           )}

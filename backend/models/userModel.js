@@ -10,8 +10,6 @@ const userSchema = new mongoose.Schema(
     skillsRequired: { type: [String], default: [] }, 
     credits: { type: Number, default: 0 },
     location: { type: String }, // Added location
-    taughtCount: { type: Number, default: 0 },
-    learnedCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

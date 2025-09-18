@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { useParams } from "react-router-dom";
 import API from "../api";
 import {
   FaMapMarkerAlt,
@@ -23,18 +22,11 @@ class Profile extends Component {
     recentActivity: [], 
     loading: true,
     error: null,
-    isEditing: false,
-    editForm: {
-      name: "",
-      location: "",
-      skillsOffered: "",
-      skillsRequired: ""
-    }
   };
 
   async componentDidMount() {
     try {
-      const { id } = this.props.params || {}; 
+      const { id } = this.props.params; 
       let url = id ? `/users/${id}` : "/users/me"; 
       
       const res = await API.get(url); 
@@ -46,71 +38,13 @@ class Profile extends Component {
         skillsOffered: res.data.skillsOffered || [],
         skillsRequired: res.data.skillsRequired || [],
         credits: res.data.credits || 0,
-        taughtCount: res.data.taughtCount || 0,
-        learnedCount: res.data.learnedCount || 0,
         memberSince: res.data.createdAt || "",
         loading: false,
-        isOwnProfile: !id, 
-        userId: res.data._id
       });
     } catch (err) {
       console.error(err);
       this.setState({ loading: false, error: "Failed to load profile" });
     }
-  }
-
-  handleEditClick = () => {
-    this.setState({
-      isEditing: true,
-      editForm: {
-        name: this.state.name,
-        location: this.state.location === "Not provided" ? "" : this.state.location,
-        skillsOffered: this.state.skillsOffered.join(", "),
-        skillsRequired: this.state.skillsRequired.join(", ")
-      }
-    });
-  }
-
-  handleEditChange = (e) => {
-    this.setState({
-      editForm: {
-        ...this.state.editForm,
-        [e.target.name]: e.target.value
-      }
-    });
-  }
-
-  handleSaveEdit = async () => {
-    try {
-      const { editForm } = this.state;
-      const updateData = {
-        name: editForm.name,
-        location: editForm.location,
-        skillsOffered: editForm.skillsOffered.split(",").map(s => s.trim()).filter(s => s),
-        skillsRequired: editForm.skillsRequired.split(",").map(s => s.trim()).filter(s => s)
-      };
-
-      await API.put(`/users/${this.state.userId}`, updateData);
-
-      this.setState({
-        name: updateData.name,
-        location: updateData.location || "Not provided",
-        skillsOffered: updateData.skillsOffered,
-        skillsRequired: updateData.skillsRequired,
-        isEditing: false
-      });
-
-      if (this.state.isOwnProfile) {
-        localStorage.setItem("name", updateData.name);
-      }
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-      alert("Failed to update profile");
-    }
-  }
-
-  handleCancelEdit = () => {
-    this.setState({ isEditing: false });
   }
 
   getInitials(name) {
@@ -132,9 +66,6 @@ class Profile extends Component {
       recentActivity,
       loading,
       error,
-      isEditing,
-      editForm,
-      isOwnProfile
     } = this.state;
 
     if (loading) return <div className="loader">Loading profile...</div>
@@ -153,20 +84,18 @@ class Profile extends Component {
             <p><FaMapMarkerAlt /> {location}</p>
             <p><FaEnvelope /> {email}</p>
           </div>
-          {isOwnProfile && (
-            <button className="edit-profile-btn" onClick={this.handleEditClick}>
-              <FaUserEdit /> Edit Profile
-            </button>
-          )}
+          <button className="edit-profile-btn">
+            <FaUserEdit /> Edit Profile
+          </button>
         </div>
 
         <div className="stats-cards">
           <div className="card">
-            <div className="stat-number">{this.state.taughtCount || 0}</div>
+            <div className="stat-number">{skillsOffered.length}</div>
             <div>Skills Taught <FaAward /></div>
           </div>
           <div className="card">
-            <div className="stat-number">{this.state.learnedCount || 0}</div>
+            <div className="stat-number">{skillsRequired.length}</div>
             <div>Skills Learned <FaUsers /></div>
           </div>
           <div className="card">
@@ -179,85 +108,29 @@ class Profile extends Component {
           </div>
         </div>
 
-        {isEditing ? (
-          <div className="edit-form">
-            <h3>Edit Profile</h3>
-            <div className="form-group">
-              <label>Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={editForm.name}
-                onChange={this.handleEditChange}
-                className="form-input"
-              />
-            </div>
-            <div className="form-group">
-              <label>Location:</label>
-              <input
-                type="text"
-                name="location"
-                value={editForm.location}
-                onChange={this.handleEditChange}
-                className="form-input"
-                placeholder="Enter your location"
-              />
-            </div>
-            <div className="form-group">
-              <label>Skills I Can Teach (comma separated):</label>
-              <input
-                type="text"
-                name="skillsOffered"
-                value={editForm.skillsOffered}
-                onChange={this.handleEditChange}
-                className="form-input"
-                placeholder="e.g., React, Node.js, Python"
-              />
-            </div>
-            <div className="form-group">
-              <label>Skills I Want to Learn (comma separated):</label>
-              <input
-                type="text"
-                name="skillsRequired"
-                value={editForm.skillsRequired}
-                onChange={this.handleEditChange}
-                className="form-input"
-                placeholder="e.g., Machine Learning, AWS, Design"
-              />
-            </div>
-            <div className="form-actions">
-              <button className="save-btn" onClick={this.handleSaveEdit}>
-                Save Changes
-              </button>
-              <button className="cancel-btn" onClick={this.handleCancelEdit}>
-                Cancel
-              </button>
+        <div className="skills-sections">
+          <div className="skills-block">
+            <h3>Skills I Can Teach</h3>
+            <p>Share your expertise with others and earn credits</p>
+            <div className="skills-tags">
+              {skillsOffered.length > 0 ? skillsOffered.map((skill, idx) => (
+                <span key={idx} className="skill-tag teach">{skill}</span>
+              )) : <p>No skills listed</p>}
             </div>
           </div>
-        ) : (
-          <div className="skills-sections">
-            <div className="skills-block">
-              <h3>Skills I Can Teach</h3>
-              <p>Share your expertise with others and earn credits</p>
-              <div className="skills-tags">
-                {skillsOffered.length > 0 ? skillsOffered.map((skill, idx) => (
-                  <span key={idx} className="skill-tag teach">{skill}</span>
-                )) : <p>No skills listed</p>}
-              </div>
-            </div>
 
-            <div className="skills-block">
-              <h3>Skills I Want to Learn</h3>
-              <p>Areas where you're looking to grow and improve</p>
-              <div className="skills-tags">
-                {skillsRequired.length > 0 ? skillsRequired.map((skill, idx) => (
-                  <span key={idx} className="skill-tag learn">{skill}</span>
-                )) : <p>No skills listed</p>}
-              </div>
+          <div className="skills-block">
+            <h3>Skills I Want to Learn</h3>
+            <p>Areas where you're looking to grow and improve</p>
+            <div className="skills-tags">
+              {skillsRequired.length > 0 ? skillsRequired.map((skill, idx) => (
+                <span key={idx} className="skill-tag learn">{skill}</span>
+              )) : <p>No skills listed</p>}
             </div>
           </div>
-        )}
-        
+        </div>
+
+        {/* You can omit recent activity if backend does not provide */}
         {recentActivity.length > 0 && (
           <div className="recent-activity">
             <h3>Recent Activity</h3>
@@ -276,9 +149,4 @@ class Profile extends Component {
   }
 }
 
-function ProfileWithParams(props) {
-  const params = useParams();
-  return <Profile {...props} params={params} />;
-}
-
-export default ProfileWithParams;
+export default Profile;

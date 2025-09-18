@@ -1,40 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaHome, FaUsers, FaUser } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
-import API from "../api";
 import "./Navbar.css";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [username, setUsername] = useState("User");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("userId");
     navigate("/login");
   };
 
   const isLoggedIn = localStorage.getItem("token");
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (isLoggedIn) {
-        try {
-          const response = await API.get("/users/me");
-          setUsername(response.data.name || "User");
-        } catch (error) {
-          console.error("Failed to fetch user data:", error);
-          // Fallback to localStorage if API fails
-          setUsername(localStorage.getItem("name") || "User");
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [isLoggedIn]);
+  const username = localStorage.getItem("name") || "User";
 
   return (
     <nav className="navbar">

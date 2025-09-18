@@ -21,7 +21,7 @@ class SignUp extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/users/register", {
+      await axios.post("http://localhost:5000/api/users/register", {
         name: this.state.name,
         email: this.state.email,
         password: this.state.password,
@@ -29,9 +29,6 @@ class SignUp extends Component {
         skillsOffered: this.state.skillsOffered.split(",").map(s => s.trim()),
         location: this.state.location,
       });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("name", res.data.name);
-      localStorage.setItem("userId", res.data._id);
       window.location.href = "/dashboard";
     } catch (err) {
       this.setState({ error: err.response?.data?.message || "Signup failed" });

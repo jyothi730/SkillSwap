@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import API from "../api";
-import { Link } from "react-router-dom";
+import axios from "axios";
 import "./Dashboard.css";
 
 class Dashboard extends Component {
@@ -21,14 +20,17 @@ class Dashboard extends Component {
 
   async fetchData() {
     try {
+      const token = localStorage.getItem("token");
+      const headers = { Authorization: `Bearer ${token}` };
+
       // Fetch current user
-      const userRes = await API.get("/users/me");
+      const userRes = await axios.get("/api/users/me", { headers });
 
       // Fetch skill matches
-      const matchesRes = await API.get("/users/me/matches");
+      const matchesRes = await axios.get("/api/users/me/matches", { headers });
 
       // Fetch requests
-      const requestsRes = await API.get("/requests");
+      const requestsRes = await axios.get("/api/requests", { headers });
 
       this.setState({
         user: userRes.data,
@@ -47,6 +49,9 @@ class Dashboard extends Component {
   // Add or update user skills
   handleUpdateSkills = async (type) => {
     try {
+      const token = localStorage.getItem("token");
+      const headers = { Authorization: `Bearer ${token}` };
+
       const newSkill = prompt(
         `Enter a ${type === "offered" ? "skill you offer" : "skill you want"}`
       );
@@ -61,21 +66,14 @@ class Dashboard extends Component {
           newSkill,
         ],
       };
-      await API.put(`/users/${this.state.user._id}`, updatedUser);
+
+      await axios.put(`/api/users/${this.state.user._id}`, updatedUser, {
+        headers,
+      });
 
       this.setState({ user: updatedUser });
     } catch (err) {
       alert("Failed to update skills");
-    }
-  };
-
-  handleUpdateRequestStatus = async (requestId, status) => {
-    try {
-      await API.put(`/requests/${requestId}`, { status });
-      const requestsRes = await API.get("/requests");
-      this.setState({ requests: requestsRes.data });
-    } catch (err) {
-      alert("Failed to update request");
     }
   };
 
@@ -98,21 +96,35 @@ class Dashboard extends Component {
             <h2>Welcome back, {user?.name}!</h2>
             <p>Ready to learn something new or share your expertise?</p>
           </div>
-          <Link to="/match" className="find-matches-btn">Find Matches</Link>
+          <button className="find-matches-btn">Find Matches</button>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="dashboard-content">
-          {/* Skills You Offer */}
+        {/* Matches */}
+        <section>
+          <h3>Recommended Matches</h3>
+          {matches.length > 0 ? (
+            <ul>
+              {matches.map((m) => (
+                <li key={m._id}>
+                  {m.name} – Skills you need: {m.offeredMatch?.join(", ")} | Skills they
+                  need: {m.requiredMatch?.join(", ")}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No matches found yet.</p>
+          )}
+        </section>
+
+        {/* Skills */}
+        <div className="two-column">
           <div className="card">
             <h3>Skills You Offer</h3>
             <div className="skills">
               {user?.skillsOffered?.length > 0 ? (
                 user.skillsOffered.map((s, i) => <span key={i}>{s}</span>)
               ) : (
-                <div className="empty-state">
-                  <p>No offered skills yet</p>
-                </div>
+                <p>No offered skills yet</p>
               )}
             </div>
             <button
@@ -123,16 +135,13 @@ class Dashboard extends Component {
             </button>
           </div>
 
-          {/* Skills You Want */}
           <div className="card">
             <h3>Skills You Want</h3>
             <div className="skills blue">
               {user?.skillsRequired?.length > 0 ? (
                 user.skillsRequired.map((s, i) => <span key={i}>{s}</span>)
               ) : (
-                <div className="empty-state">
-                  <p>No learning goals yet</p>
-                </div>
+                <p>No learning goals yet</p>
               )}
             </div>
             <button
@@ -144,63 +153,20 @@ class Dashboard extends Component {
           </div>
         </div>
 
-        {/* Recommended Matches */}
-        <div className="card matches-section">
-          <h3>Recommended Matches</h3>
-          {matches.length > 0 ? (
-            <ul className="matches-list">
-              {matches.map((m) => (
-                <li key={m._id}>
-                  <div className="match-name">{m.name}</div>
-                  <div className="match-skills">
-                    <strong>Skills you need:</strong> {m.offeredMatch?.join(", ")}<br/>
-                    <strong>Skills they need:</strong> {m.requiredMatch?.join(", ")}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="empty-state">
-              <p>No matches found yet. Add some skills to find potential matches!</p>
-            </div>
-          )}
-        </div>
-
         {/* Recent Requests */}
-        <div className="card requests-section">
+        <div className="card">
           <h3>Recent Requests</h3>
           {requests.length > 0 ? (
-            <ul className="requests-list">
+            <ul>
               {requests.map((r) => (
                 <li key={r._id}>
-                  <div className="request-info">
-                    <div className="request-participants">
-                      {r.sender?.name} → {r.receiver?.name}
-                    </div>
-                    <div className="request-skills">
-                      {r.skillOffered} ↔ {r.skillRequired}
-                    </div>
-                  </div>
-                  <div className={`request-status ${r.status}`}>
-                    {r.status}
-                  </div>
-                  {user && r.receiver?._id === user._id && r.status === "pending" && (
-                    <span style={{ marginLeft: 12 }}>
-                      <button className="view-btn" onClick={() => this.handleUpdateRequestStatus(r._id, "accepted")}>
-                        Accept
-                      </button>
-                      <button className="view-btn" style={{ marginLeft: 8 }} onClick={() => this.handleUpdateRequestStatus(r._id, "rejected")}>
-                        Reject
-                      </button>
-                    </span>
-                  )}
+                  {r.sender?.name} → {r.receiver?.name} | {r.skillOffered} ↔{" "}
+                  {r.skillRequired} | {r.status}
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="empty-state">
-              <p>No recent requests</p>
-            </div>
+            <p>No recent requests</p>
           )}
         </div>
       </div>

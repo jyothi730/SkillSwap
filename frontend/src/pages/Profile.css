@@ -3,13 +3,13 @@
   margin: 2rem auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #1a1a1a;
-  background: #f8fafc;
+  background: #faf9ff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 0.05);
-  min-height: calc(100vh - 4rem);
 }
 
+/* Header */
 .profile-header {
   display: flex;
   align-items: center;
@@ -51,6 +51,7 @@
   gap: 0.4rem;
 }
 
+/* Stats Cards */
 .stats-cards {
   display: flex;
   gap: 1rem;
@@ -85,6 +86,7 @@
   gap: 0.4rem;
 }
 
+/* Skills Sections */
 .skills-sections {
   display: flex;
   gap: 2rem;
@@ -112,6 +114,7 @@
   margin-bottom: 1rem;
 }
 
+/* Skill tags */
 .skills-tags {
   display: flex;
   flex-wrap: wrap;
@@ -140,6 +143,7 @@
   border: 1px solid #99a9e9;
 }
 
+/* Buttons */
 .edit-profile-btn,
 .contact-btn {
   background-color: #0c0f4a;
@@ -160,6 +164,7 @@
   background-color: #282c81;
 }
 
+/* Recent Activity */
 .recent-activity {
   background: white;
   padding: 1.5rem 2rem;
@@ -205,99 +210,6 @@
   background-color: #3f51b5;
 }
 
-.edit-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.04);
-  margin-bottom: 2rem;
-}
-
-.edit-form h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  color: #1a1a1a;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.save-btn {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.save-btn:hover {
-  background: #45a049;
-}
-
-.cancel-btn {
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.cancel-btn:hover {
-  background: #da190b;
-}
-
-.loader {
-  text-align: center;
-  padding: 2rem;
-  font-size: 16px;
-  color: #666;
-}
-
-.error {
-  text-align: center;
-  padding: 2rem;
-  color: #f44336;
-  background: #ffebee;
-  border-radius: 8px;
-  margin: 1rem 0;
-}
-
 @media (max-width: 768px) {
   .stats-cards,
   .skills-sections {
@@ -308,13 +220,5 @@
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .edit-form {
-    padding: 1.5rem;
   }
 }
