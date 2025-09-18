@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import axios from "axios";
+import API from "../api";
 import { Link } from "react-router-dom";
 import './SignUp.css'
 
@@ -21,7 +21,7 @@ class SignUp extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/users/register", {
+      const res = await API.post("/users/register", {
         name: this.state.name,
         email: this.state.email,
         password: this.state.password,

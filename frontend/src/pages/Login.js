@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import axios from "axios";
+import API from "../api";
 
 class Login extends Component {
   state = {
@@ -15,7 +15,7 @@ class Login extends Component {
   handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/users/login", {
+      const res = await API.post("/users/login", {
         email: this.state.email,
         password: this.state.password,
       });
