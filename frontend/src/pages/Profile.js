@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import API from "../api";
 import {
   FaMapMarkerAlt,
@@ -24,6 +24,7 @@ class Profile extends Component {
     loading: true,
     error: null,
     isEditing: false,
+    isAuthenticated: true,
     editForm: {
       name: "",
       location: "",
@@ -34,10 +35,18 @@ class Profile extends Component {
 
   async componentDidMount() {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        this.setState({ isAuthenticated: false });
+        return;
+      }
+
       const { id } = this.props.params || {}; 
       let url = id ? `/users/${id}` : "/users/me"; 
       
-      const res = await API.get(url); 
+      const res = await API.get(url, {
+        headers: { Authorization: `Bearer ${token}` } 
+      });
 
       this.setState({
         name: res.data.name,
@@ -133,9 +142,14 @@ class Profile extends Component {
       loading,
       error,
       isEditing,
+      isAuthenticated,
       editForm,
       isOwnProfile
     } = this.state;
+
+    if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
 
     if (loading) return <div className="loader">Loading profile...</div>
     if (error) return <div className="error">{error}</div>
