@@ -4,7 +4,7 @@
 
 SkillSwap is a MERN (MongoDB, Express.js, React, Node.js) based web application that connects learners with people who can teach them new skills. Users can **sign up, log in, showcase their skills, request skills they want to learn, and connect with others**.
 
-## Link: https://skillswap-1-f4vs.onrender.com
+Link: https://skillswap-1-f4vs.onrender.com
 
 ---
 
@@ -24,8 +24,6 @@ SkillSwap is a MERN (MongoDB, Express.js, React, Node.js) based web application 
 - **Database:** MongoDB Atlas  
 - **Authentication:** JWT (JSON Web Tokens)  
 - **Deployment:** Render  
-
----
 
 ---
 
